@@ -2,7 +2,6 @@ package methods
 
 import (
 	// "fmt"
-
 	"time"
 
 	"generic"

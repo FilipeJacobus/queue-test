@@ -1,7 +1,6 @@
 package main
 
 import (
-	"container/list"
 	"log"
 	"net/http"
 
@@ -12,18 +11,16 @@ import (
 
 func main() {
 
-	//TODO
-	//it is possible run RPC concurrently to this server
-	//using goroutines and channels
-	//I will define how to implement it later
-
-	//init queue
-	queue := list.New()
-
 	svc := methods.StringService{}
 
+	// start counting the time between requests,
+	// if the time interval was longer than the
+	// defined, it persists the items contained
+	// in queue
+	go methods.Timer()
+
 	PersistHandler := httptransport.NewServer(
-		methods.MakePersistEndpoint(svc, queue),
+		methods.MakePersistEndpoint(svc),
 		methods.DecodePersistRequest,
 		methods.EncodeResponse,
 	)

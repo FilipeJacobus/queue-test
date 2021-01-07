@@ -2,7 +2,6 @@ package methods
 
 import (
 	"container/list"
-	"fmt"
 )
 
 func (StringService) Persist(c PersistRequest, queue *list.List) (string, error) {
@@ -10,21 +9,37 @@ func (StringService) Persist(c PersistRequest, queue *list.List) (string, error)
 	queue.PushBack(c)
 	if queue.Len() >= 10 {
 
+		//create struct list
+		var q []PersistRequest
 		for i := 0; i < queue.Len(); i++ {
 			e := queue.Front()
-			fmt.Println(i+1, "persist >", e.Value)
-			stc := e.Value.(PersistRequest)
+			q = append(q, e.Value.(PersistRequest))
 
-			//implement goroutines and channels here ↓↓
-			insertData(stc)
 		}
-		//clear queue || TODO:implement correct method
+
+		//att list in memory address
+		qm := &q
+
+		//clear queue
 		for i := 0; i < queue.Len(); i++ {
 			e := queue.Front()
 			queue.Remove(e)
 		}
 
+		//persist list
+		ch := make(chan bool)
+		go persistList(qm, ch)
+		if <-ch {
+			return "success", nil
+		}
 	}
 
 	return "success", nil
+}
+
+func persistList(q *[]PersistRequest, ch chan bool) {
+	for _, v := range *q {
+		insertData(v)
+	}
+	ch <- true
 }

@@ -17,7 +17,7 @@ func (StringService) Persist(c PersistRequest, queue *list.List) (string, error)
 
 		}
 
-		//att list in memory address
+		//add list to memory address
 		qm := &q
 
 		//clear queue
